@@ -52,7 +52,7 @@ val (commitCount, latestTag) = FileRepositoryBuilder().setGitDir(rootProject.fil
                 .setAbbrev(0).call().removePrefix("v")
             commitCount to ver
         }
-    }.getOrNull() ?: (1 to "1.0")
+    }.getOrNull() ?: (6649 to "1.8.5")
 
 val injectedPackageName by extra("com.android.shell")
 val injectedPackageUid by extra(2000)

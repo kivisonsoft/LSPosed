@@ -37,4 +37,5 @@ include(
     ":services:manager-service",
     ":services:daemon-service",
     ":services:xposed-service:interface",
+    ":ceenemu",
 )

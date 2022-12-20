@@ -30,6 +30,7 @@ import org.lsposed.lspd.BuildConfig;
 public class Main {
 
     public static void forkCommon(boolean isSystem, String niceName, IBinder binder) {
+        Utils.logI("magisk-loader forkCommon " + niceName + "/" + Process.myUid());
         Startup.initXposed(isSystem, niceName, ILSPApplicationService.Stub.asInterface(binder));
         if ((niceName.equals(BuildConfig.MANAGER_INJECTED_PKG_NAME) || niceName.equals(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME))
                 && ParasiticManagerHooker.start()) {

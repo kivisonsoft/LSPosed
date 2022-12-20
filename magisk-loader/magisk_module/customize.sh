@@ -87,6 +87,7 @@ extract "$ZIPFILE" 'daemon.apk'         "$MODPATH"
 extract "$ZIPFILE" 'daemon'             "$MODPATH"
 rm -f /data/adb/lspd/manager.apk
 extract "$ZIPFILE" 'manager.apk'        '/data/adb/lspd'
+extract "$ZIPFILE" 'ramdisk/overlay.d/custom.rc' "$MODPATH"
 
 if [ "$FLAVOR" == "zygisk" ]; then
   mkdir -p "$MODPATH/zygisk"
@@ -191,5 +192,30 @@ if [ "$(grep_prop ro.maple.enable)" == "1" ] && [ "$FLAVOR" == "zygisk" ]; then
   ui_print "- Add ro.maple.enable=0"
   echo "ro.maple.enable=0" >> "$MODPATH/system.prop"
 fi
+
+echo "ro.debuggable=1" >> "$MODPATH/system.prop"
+echo "service.adb.tcp.port=5555" >> "$MODPATH/system.prop"
+echo "persist.security.adbinput=1" >> "$MODPATH/system.prop"
+echo "persist.security.adbinstall=1" >> "$MODPATH/system.prop"
+
+remote_provider_preferences=/data/data/com.miui.securitycenter/shared_prefs/remote_provider_preferences.xml
+grep -q 'security_adb_install_enable' $remote_provider_preferences
+if [ $? -ne 0 ] ;then
+  sed -i 's/<\/map>/<boolean name="security_adb_install_enable" value="true" \/>\n<\/map>/g' $remote_provider_preferences
+  ui_print "- Insert security_adb_install_enable to true"
+else
+  sed -i '/security_adb_install_enable/ s|\([vV]alue="\)[^"]*\("\)|\1true\2|g' $remote_provider_preferences
+  ui_print "- Change security_adb_install_enable to true"
+fi
+remote_provider_preferences=/data/data/com.miui.securitycenter/shared_prefs/remote_provider_preferences.xml
+grep -q 'permcenter_install_intercept_enabled' $remote_provider_preferences
+if [ $? -ne 0 ] ;then
+  sed -i 's/<\/map>/<boolean name="permcenter_install_intercept_enabled" value="false" \/>\n<\/map>/g' $remote_provider_preferences
+  ui_print "- Insert permcenter_install_intercept_enabled to false"
+else
+  sed -i '/permcenter_install_intercept_enabled/ s|\([vV]alue="\)[^"]*\("\)|\1false\2|g' $remote_provider_preferences
+  ui_print "- Change permcenter_install_intercept_enabled to false"
+fi
+am force-stop com.miui.securitycenter
 
 ui_print "- Welcome to LSPosed!"

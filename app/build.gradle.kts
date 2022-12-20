@@ -169,6 +169,7 @@ dependencies {
     implementation("me.zhanghai.android.appiconloader:appiconloader:1.5.0")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation(projects.services.managerService)
+    implementation(projects.ceenemu)
 
     val appCenter = "5.0.0"
     debugImplementation("com.microsoft.appcenter:appcenter-crashes:${appCenter}")
