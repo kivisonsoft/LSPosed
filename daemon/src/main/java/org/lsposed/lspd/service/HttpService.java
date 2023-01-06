@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import com.yanzhenjie.andserver.AndServer;
 import com.yanzhenjie.andserver.Server;
+import com.yanzhenjie.andserver.annotation.QueryParam;
 import com.yanzhenjie.andserver.util.MediaType;
 import com.yanzhenjie.andserver.annotation.RequestMethod;
 import com.yanzhenjie.andserver.annotation.GetMapping;
@@ -50,7 +51,7 @@ public class HttpService {
     }
 
     @GetMapping(path = "/scope")
-    public String getScope(@RequestParam String packageName){
+    public String getScope(@QueryParam("packageName") String packageName){
         List<Application> moduleScope = ConfigManager.getInstance().getModuleScope(packageName);
         JSONArray result = new JSONArray();
         for (Application app : moduleScope) {
@@ -60,7 +61,7 @@ public class HttpService {
     }
 
     @PostMapping(path = "/scope", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String setScope(@RequestParam String packageName, @RequestBody String json) {
+    public String setScope(@QueryParam("packageName") String packageName, @RequestBody String json) {
         try {
             List<Application> apps = new ArrayList<>();
             JSONArray packages = new JSONArray(json);

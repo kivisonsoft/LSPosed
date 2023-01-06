@@ -37,7 +37,7 @@ buildscript {
     }
     dependencies {
         classpath("org.eclipse.jgit:org.eclipse.jgit:6.4.0.202211300538-r")
-        classpath("com.yanzhenjie.andserver:plugin:2.1.7")
+        classpath("com.yanzhenjie.andserver:plugin:2.1.10")
     }
 }
 val (commitCount, latestTag) = FileRepositoryBuilder().setGitDir(rootProject.file(".git"))
