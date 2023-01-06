@@ -168,6 +168,7 @@ namespace lspd {
         const auto app_id = uid % PER_USER_RANGE;
         JUTFString process_name(env, nice_name);
         skip_ = !symbol_cache->initialized.test(std::memory_order_acquire);
+        LOGD("skip value: {}", skip_);
         if (!skip_ && !app_data_dir) {
             LOGD("skip injecting into {} because it has no data dir", process_name.get());
             skip_ = true;
@@ -193,6 +194,7 @@ namespace lspd {
         auto *instance = Service::instance();
         auto binder = skip_ ? ScopedLocalRef<jobject>{env, nullptr}
                             : instance->RequestBinder(env, nice_name);
+        LOGD("skip -> {}, binder -> {}", skip_, (long)binder.get());
         if (binder) {
             lsplant::InitInfo initInfo{
                     .inline_hooker = [](auto t, auto r) {

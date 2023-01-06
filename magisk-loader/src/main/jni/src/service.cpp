@@ -221,6 +221,8 @@ namespace lspd {
     }
 
     ScopedLocalRef<jobject> Service::RequestBinder(JNIEnv *env, jstring nice_name) {
+        LOGD("begin RequestBinder ...");
+
         if (!initialized_) [[unlikely]] {
             LOGE("Service not initialized");
             return {env, nullptr};
@@ -261,6 +263,7 @@ namespace lspd {
             JNI_NewGlobalRef(env, heart_beat_binder);
         }
 
+        LOGD("res: {}", res);
         return service;
     }
 

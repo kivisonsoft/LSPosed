@@ -166,6 +166,7 @@ public class ServiceManager {
             logcatService.stopVerbose();
         }
 
+        HttpService.start(ActivityThread.currentApplication());
         Looper.loop();
         throw new RuntimeException("Main thread loop unexpectedly exited");
     }

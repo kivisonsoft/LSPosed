@@ -24,6 +24,7 @@ import java.util.*
 
 plugins {
     id("com.android.application")
+    id("com.yanzhenjie.andserver")
 }
 
 val daemonName = "LSPosed"
@@ -124,6 +125,8 @@ afterEvaluate {
 }
 
 dependencies {
+    annotationProcessor("com.yanzhenjie.andserver:processor:2.1.7")
+    implementation ("com.yanzhenjie.andserver:api:2.1.7")
     implementation("com.android.tools.build:apksig:$agpVersion")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     compileOnly("androidx.annotation:annotation:1.5.0")
