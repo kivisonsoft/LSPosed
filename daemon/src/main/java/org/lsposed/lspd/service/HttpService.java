@@ -4,9 +4,8 @@ import android.util.Log;
 import org.json.JSONArray;
 import fi.iki.elonen.NanoHTTPD;
 import org.lsposed.lspd.models.Application;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,20 +14,6 @@ public class HttpService extends NanoHTTPD {
     public static final String TAG = "HttpService";
     public static final String HTTP_URI_CHECK = "/lsp/check";
     public static final String HTTP_URI_SCOPE = "/lsp/scope";
-    public static String toStackString(Exception e){
-        StringBuilder result = new StringBuilder();
-        result.append("ERROR: " + e.toString() + "\r\n");
-        result.append("STACKTRACE: " + "\r\n");
-        StackTraceElement[] stackTraceElements = e.getStackTrace();
-        if (stackTraceElements != null && stackTraceElements.length > 0){
-            for(int i = 0; i < stackTraceElements.length; i++){
-                StackTraceElement item = stackTraceElements[i];
-                String content = "  at " + item.getClassName() + "(" + item.getFileName() + " : " + item.getLineNumber() + ")\r\n";
-                result.append(content);
-            }
-        }
-        return result.toString();
-    }
 
     public HttpService() {
         super(PORT);
@@ -36,9 +21,6 @@ public class HttpService extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
-        Log.d(TAG, "http request -> getUri: " + session.getUri());
-        Log.d(TAG, "http request -> getQueryParameterString: " + session.getQueryParameterString());
-        Log.d(TAG, "http request -> getMethod: " + session.getMethod());
         if (session.getUri().equalsIgnoreCase(HTTP_URI_CHECK)){
             return newFixedLengthResponse(check());
         }
@@ -54,24 +36,14 @@ public class HttpService extends NanoHTTPD {
             if (session.getMethod() == Method.GET){
                 return newFixedLengthResponse(getScope(packageName));
             } else {
-                String json = "";
-                BufferedInputStream reader = null; int readSize = -1;
-                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
                 try {
-                    byte[] buffer = new byte[1024];
-                    reader = new BufferedInputStream(session.getInputStream());
-                    while ((readSize = reader.read(buffer)) != -1) {
-                        byteStream.write(buffer, 0, readSize);
-                    }
-                    byte[] data = byteStream.toByteArray();
-                    json = new String(data, "UTF-8");
+                    Map<String, String> map = new HashMap<>();
+                    session.parseBody(map);
+                    String json = map.get("postData");
+                    return newFixedLengthResponse(setScope(packageName, json));
                 } catch (Exception e) {
-                    Log.d(TAG, toStackString(e));
-                } finally {
-                    try{ if (byteStream != null) { byteStream.close(); } } catch (Exception e){ }
-                    try{ if (reader != null) { reader.close(); } } catch (Exception e){ }
+                    return newFixedLengthResponse(e.getMessage());
                 }
-                return newFixedLengthResponse(setScope(packageName, json));
             }
         }
         return newFixedLengthResponse("no support!");
