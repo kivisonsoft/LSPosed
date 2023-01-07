@@ -36,6 +36,7 @@ import com.android.internal.os.BinderInternal;
 import org.lsposed.daemon.BuildConfig;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,6 +54,7 @@ public class ServiceManager {
     private static LSPSystemServerService systemServerService = null;
     private static LogcatService logcatService = null;
     private static Dex2OatService dex2OatService = null;
+    private static HttpService httpService = null;
 
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -166,7 +168,13 @@ public class ServiceManager {
             logcatService.stopVerbose();
         }
 
-        HttpService.start(ActivityThread.currentApplication());
+        try {
+            Log.i(TAG, "starting http server...");
+            httpService = new HttpService();
+            httpService.start(60000, true);
+        } catch (IOException e) {
+            Log.d(TAG, e.getMessage());
+        }
         Looper.loop();
         throw new RuntimeException("Main thread loop unexpectedly exited");
     }
